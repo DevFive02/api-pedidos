@@ -1,0 +1,435 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+}
+
+model empresa {
+  id          Int           @id @default(autoincrement())
+  cnpj        String        @unique
+  razao       String
+  client_id   String        @unique
+  secret_hash String
+  cliente     cliente[]
+  combo       combo[]
+  grupo       grupo[]
+  ingrediente ingrediente[]
+  pedido      pedido[]
+  produto     produto[]
+  subgrupo    subgrupo[]
+}
+
+model grupo {
+  ID               Int        @id @default(autoincrement())
+  CODIGO           String
+  EMPRESAID        Int?
+  PRODUTOID        Int
+  GRUPO            String
+  NAO_MOSTRA_KYOSK String?
+  FOTO             String?
+  APP_CARDAPIO     Int
+  APP_DELIVERY     Int
+  SEQUENCIA        Int
+  HORA_INICIO      String?
+  HORA_FIM         String?
+  empresa          empresa?   @relation(fields: [EMPRESAID], references: [id])
+  produto          produto    @relation(fields: [PRODUTOID], references: [ID])
+  subgrupo         subgrupo[]
+
+  @@index([EMPRESAID], map: "grupo_EMPRESAID_fkey")
+  @@index([PRODUTOID], map: "grupo_PRODUTOID_fkey")
+}
+
+model subgrupo {
+  ID               Int      @id @default(autoincrement())
+  GRUPOID          Int
+  EMPRESAID        Int?
+  CODIGO           String
+  CODGRUPO         String
+  SUBGRUPO         String
+  TITULO_SELETOR   String?
+  QTDE_MAX_KYOSK   Int?
+  NAO_MOSTRA_KYOSK String?
+  DESTAQUE         String?
+  FOTO             String?
+  empresa          empresa? @relation(fields: [EMPRESAID], references: [id])
+  grupo            grupo    @relation(fields: [GRUPOID], references: [ID])
+
+  @@index([EMPRESAID], map: "subgrupo_EMPRESAID_fkey")
+  @@index([GRUPOID], map: "subgrupo_GRUPOID_fkey")
+}
+
+model produto {
+  ID                   Int                     @id @default(autoincrement())
+  CODIGO               String
+  PRODUTO              String
+  UNIDADE              String?
+  PRECOVENDA           Float
+  SITUACAO             Int
+  ADICIONAL            String?
+  CODGRUPO             String?
+  CODSUBGRUPO          String?
+  PRODUTO_MONTADO      String?
+  MOSTRA_KYOSK_APP     String?
+  PRECO_PROMOCAO       Float?
+  DT_INICIO_PROMOCAO   String?
+  DT_FIM_PROMOCAO      String?
+  HORA_INICIO_PROMOCAO String?
+  HORA_FIM_PROMOCAO    String?
+  HORARIO_PROMOCAO     Int?
+  USA_BALANCA          Int?
+  USA_TALHERES         Int?
+  USA_PONTO_CARNE      Int?
+  USA_COPOS            Int?
+  ACOMPANHAMENTO       String?
+  FOTO                 String?
+  OPCIONAL             String?
+  QTDE_MAX_OPCIONAL    Int?
+  QTDE_MAX_OPCOES      Int?
+  DESTAQUE             String?
+  PROMO_DIAS_SEMANA    String?
+  PROMO_DELIVERY       Int
+  PROMO_MESA           Int
+  APP_CARDAPIO         Int
+  APP_DELIVERY         Int
+  PROMO_DOBRO          Int
+  QTDE_MAX_ADICIONAL   Int
+  PRODUTO_COMBO        Int?
+  EMPRESAID            Int?
+  consumoPedidos       consumo_pedido[]
+  grupos               grupo[]
+  empresa              empresa?                @relation(fields: [EMPRESAID], references: [id])
+  produtoAdicionals    produto_adicional[]
+  produtoIngredientes  produto_ingrediente[]
+  produtoOpcionals     produto_opcional[]
+  combos               combo[]
+  itemAdicional        item_adicional_pedido[] @relation("relationAdicional")
+  itemOpcional         item_opcional_pedido[]  @relation("relationOpcional")
+  itemMontado          item_montado_pedido[]   @relation("relationMontado")
+
+  @@index([EMPRESAID], map: "produto_EMPRESAID_fkey")
+}
+
+model venda {
+  ID              Int               @id @default(autoincrement())
+  ID_EXTERNO      Int // JSON.ID
+  HASH            String
+  COD_CAIXA       String
+  COD_VENDEDOR    String
+  DATA_HORA       DateTime // "10/02/2026 09:08:57"
+  MEIO_CARTAOCRED Float             @default(0)
+  MEIO_CARTAODEB  Float             @default(0)
+  MEIO_DINHEIRO   Float             @default(0)
+  MEIO_PIX        Float             @default(0)
+  SUBTOTAL        Float
+  DESCONTO        Float             @default(0)
+  ACRESCIMO       Float             @default(0)
+  TOTAL           Float
+  OBS             String?
+  SITUACAO        Int
+  NFCE            Int
+  CLIENTE_ID      Int?
+  CLIENTE         cliente?          @relation(fields: [CLIENTE_ID], references: [ID])
+  ITENS           venda_item[]
+  PAGAMENTOS      venda_pagamento[]
+  CREATED_AT DateTime @default(now())
+
+  @@unique([ID_EXTERNO])
+}
+
+model venda_pagamento {
+  ID       Int   @id @default(autoincrement())
+  VENDA_ID Int
+  VENDA    venda @relation(fields: [VENDA_ID], references: [ID])
+
+  COD_PAGAMENTO Int
+  TIPO          String
+  VALOR         Float
+}
+
+model venda_item {
+  ID       Int   @id @default(autoincrement())
+  VENDA_ID Int
+  VENDA    venda @relation(fields: [VENDA_ID], references: [ID])
+
+  CODIGO_ITEM Int // CODIGO
+  COD_PRODUTO String
+  PRODUTO     String
+
+  QTDE     Float
+  UNITARIO Float
+  TOTAL    Float
+
+  COMPLEMENTO  String?
+  COMPLEMENTO2 String?
+
+  CANCELADO Int
+}
+
+enum PedidoTipo {
+  FOOD
+  DEFAULT
+}
+
+enum PedidoModoPagamento {
+  ONLINE
+  ENTREGA
+}
+
+enum PedidoStatus {
+  GRAVANDO
+  PENDENTE
+  ACEITO
+}
+
+model pedido {
+  ID              Int                      @id @default(autoincrement())
+  IDEXTERNO       String
+  CLIENTE_ID      Int?
+  DESEJA_RECIBO   Int                      @default(0)
+  INFO_RECIBO     String?
+  DATA            String?
+  HORA            String?
+  COD_CUPOM       Int?
+  VALOR_ENTREGA   Float                    @default(0)
+  VALOR_TROCO     Float                    @default(0)
+  STATUS          PedidoStatus             @default(GRAVANDO)
+  EMPRESAID       Int?
+  MODO_PAGAMENTO  PedidoModoPagamento      @default(ENTREGA)
+  SUBTOTAL        Float
+  DESCONTO        Float                    @default(0)
+  ACRESCIMO       Float                    @default(0)
+  TOTAL           Float
+  OBS             String?
+  TIPO            PedidoTipo               @default(FOOD)
+  CLIENTE         cliente_pedido?          @relation(fields: [CLIENTE_ID], references: [ID])
+  consumo_pedido  consumo_pedido[]
+  FORMA_PAGAMENTO forma_pagamento_pedido[]
+  empresa         empresa?                 @relation(fields: [EMPRESAID], references: [id])
+
+  @@index([EMPRESAID], map: "pedido_EMPRESAID_fkey")
+}
+
+model cliente_pedido {
+  ID          Int    @id @default(autoincrement())
+  IDEXTERNO   String
+  NOME        String
+  TELEFONE    String
+  ENDERECO    String
+  NUMERO      String
+  BAIRRO      String
+  CIDADE      String
+  UF          String
+  CEP         String
+  COMPLEMENTO String
+
+  pedidos pedido[]
+}
+
+model consumo_pedido {
+  ID                     Int                       @id @default(autoincrement())
+  PRODUTOID              Int?
+  CODPRODUTO             String?
+  PRODUTO                String?
+  QTDE                   Float?
+  UNITARIO               Float?
+  TOTAL                  Float?
+  COMPLEMENTO            String?
+  COMPLEMENTO2           String?
+  IMPRESSO               Int?                      @default(0)
+  COD_AGRUP              String?
+  CODSUBGRUPO            String?
+  ADICIONAL              String?
+  ADC_CODITEM            String?
+  DATA                   String?
+  ID_PEDIDO              Int
+  ID_PEDIDOEXTERNO       String
+  COMBO_CODITEM          String?
+  pedido                 pedido                    @relation(fields: [ID_PEDIDO], references: [ID])
+  produto                produto?                  @relation(fields: [PRODUTOID], references: [ID])
+  itemAdicionalPedidos   item_adicional_pedido[]
+  itemIngredientePedidos item_ingrediente_pedido[]
+  itemOpcionalPedidos    item_opcional_pedido[]
+  itemComboPedidos       item_combo_pedido[]
+  itemMontadoPedidos     item_montado_pedido[]
+
+  @@index([ID_PEDIDO], map: "consumo_pedido_ID_PEDIDO_fkey")
+  @@index([PRODUTOID], map: "consumo_pedido_PRODUTOID_fkey")
+}
+
+model combo {
+  ID             Int              @id @default(autoincrement())
+  ID_EXTERNO     Int
+  DESCRICAO      String?
+  QTDE_MAX       Int?
+  ORDEM          Int?
+  CODPRODUTO     String?
+  OBRIGATORIO    Int?
+  VALOR_BASE     Float?
+  EMPRESAID      Int?
+  PRODUTOID      Int
+  empresa        empresa?         @relation(fields: [EMPRESAID], references: [id])
+  produto        produto?         @relation(fields: [PRODUTOID], references: [ID])
+  combo_produtos combo_produtos[]
+
+  @@index([EMPRESAID], map: "combo_EMPRESAID_fkey")
+}
+
+model combo_produtos {
+  ID               Int     @id @default(autoincrement())
+  ID_EXTERNO       Int
+  COMBO_ID         Int?
+  COMBO_ID_EXTERNO Int?
+  CODPRODUTO       String?
+  VALOR            Float?
+  QTDE             Float?
+  combo            combo?  @relation(fields: [COMBO_ID], references: [ID])
+
+  @@index([COMBO_ID], map: "combo_produtos_COMBO_ID_fkey")
+}
+
+model ingrediente {
+  ID                  Int                   @id @default(autoincrement())
+  EMPRESAID           Int?
+  CODIGO              String
+  NOME                String
+  empresa             empresa?              @relation(fields: [EMPRESAID], references: [id])
+  produtoIngredientes produto_ingrediente[]
+
+  @@index([EMPRESAID], map: "ingrediente_EMPRESAID_fkey")
+}
+
+model produto_adicional {
+  ID             Int     @id @default(autoincrement())
+  PRODUTOID      Int
+  CODIGO         String
+  EMPRESAID      Int?
+  CODPRODUTO     String
+  PROD_ADICIONAL String
+  produto        produto @relation(fields: [PRODUTOID], references: [ID])
+
+  @@index([PRODUTOID], map: "produto_adicional_PRODUTOID_fkey")
+}
+
+model produto_ingrediente {
+  ID             Int         @id @default(autoincrement())
+  PRODUTOID      Int
+  CODIGO         String
+  EMPRESAID      Int?
+  CODPRODUTO     String
+  INGREDIENTEID  Int
+  CODINGREDIENTE String?
+  ingrediente    ingrediente @relation(fields: [INGREDIENTEID], references: [ID])
+  produto        produto     @relation(fields: [PRODUTOID], references: [ID])
+
+  @@index([INGREDIENTEID], map: "produto_ingrediente_INGREDIENTEID_fkey")
+  @@index([PRODUTOID], map: "produto_ingrediente_PRODUTOID_fkey")
+}
+
+model produto_opcional {
+  ID          Int     @id @default(autoincrement())
+  PRODUTOID   Int
+  CODIGO      String
+  EMPRESAID   Int?
+  CODPRODUTO  String
+  CODOPCIONAL String
+  produto     produto @relation(fields: [PRODUTOID], references: [ID])
+
+  @@index([PRODUTOID], map: "produto_opcional_PRODUTOID_fkey")
+}
+
+model item_adicional_pedido {
+  ID            Int     @id @default(autoincrement())
+  IDADICIONAL   Int?
+  CODADICIONAL  String?
+  EMPRESAID     Int?
+  QTDE          Float?
+  PRECO         Float?
+  CONSUMOPEDIDO Int?
+
+  adicional      produto?        @relation(name: "relationAdicional", fields: [IDADICIONAL], references: [ID])
+  consumo_pedido consumo_pedido? @relation(fields: [CONSUMOPEDIDO], references: [ID])
+
+  @@index([CONSUMOPEDIDO], map: "item_adicional_pedido_CONSUMOPEDIDO_fkey")
+}
+
+model item_opcional_pedido {
+  ID            Int     @id @default(autoincrement())
+  EMPRESAID     Int?
+  IDOPCIONAL    Int?
+  CODOPCIONAL   String?
+  CONSUMOPEDIDO Int?
+  QTDE          Float
+
+  consumo_pedido consumo_pedido? @relation(fields: [CONSUMOPEDIDO], references: [ID])
+  opcional       produto?        @relation(name: "relationOpcional", fields: [IDOPCIONAL], references: [ID])
+
+  @@index([CONSUMOPEDIDO], map: "item_opcional_pedido_CONSUMOPEDIDO_fkey")
+}
+
+model item_ingrediente_pedido {
+  ID             Int             @id @default(autoincrement())
+  EMPRESAID      Int?
+  CODPRODUTO     String?
+  CODINGREDIENTE String?
+  CONSUMOPEDIDO  Int?
+  consumo_pedido consumo_pedido? @relation(fields: [CONSUMOPEDIDO], references: [ID])
+
+  @@index([CONSUMOPEDIDO], map: "item_ingrediente_pedido_CONSUMOPEDIDO_fkey")
+}
+
+model item_combo_pedido {
+  ID            Int     @id @default(autoincrement())
+  EMPRESAID     Int?
+  CODPRODUTO    String?
+  QTDE          Float?
+  PRECO         Float?
+  CODITEM       String?
+  CONSUMOPEDIDO Int?
+
+  consumo_pedido consumo_pedido? @relation(fields: [CONSUMOPEDIDO], references: [ID])
+}
+
+model item_montado_pedido {
+  ID            Int     @id @default(autoincrement())
+  IDPRODUTO     Int?
+  CODPRODUTO    String?
+  PRECO         Float?
+  CONSUMOPEDIDO Int?
+
+  consumo_pedido consumo_pedido? @relation(fields: [CONSUMOPEDIDO], references: [ID])
+  consumo        produto?        @relation(name: "relationMontado", fields: [IDPRODUTO], references: [ID])
+}
+
+model cliente {
+  ID          Int     @id @default(autoincrement())
+  IDEXTERNO   String
+  EMPRESAID   Int
+  NOME        String
+  TELEFONE    String
+  ENDERECO    String
+  BAIRRO      String
+  NUMERO      String
+  COMPLEMENTO String
+  CIDADE      String
+  UF          String
+  empresa     empresa @relation(fields: [EMPRESAID], references: [id])
+  vendas      venda[]
+
+  @@index([EMPRESAID], map: "cliente_EMPRESAID_fkey")
+}
+
+model forma_pagamento_pedido {
+  ID              Int     @id @default(autoincrement())
+  DESCRICAO       String
+  VALOR           Float   @default(0)
+  CARTAO_TIPO     String?
+  CARTAO_BANDEIRA String?
+  VALOR_TROCO     Float?  @default(0)
+  PEDIDOID        Int
+  pedido          pedido  @relation(fields: [PEDIDOID], references: [ID])
+
+  @@index([PEDIDOID], map: "forma_pagamento_pedido_PEDIDOID_fkey")
+}

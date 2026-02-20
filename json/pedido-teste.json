@@ -1,0 +1,171 @@
+{
+  "pedido": {
+    "CLIENTE_ID": 1,
+    "VALOR": 78.9,
+    "PAGAMENTO": "DINHEIRO",
+    "ENTREGA": "Rua Exemplo, 123 - Centro",
+    "VALOR_TROCO": 100,
+    "DESEJA_RECIBO": 1,
+    "INFO_RECIBO": "CPF 000.000.000-00",
+    "COD_CUPOM": null,
+    "DATA": "18/01/2026",
+    "HORA": "21:10:30",
+    "VALOR_ENTREGA": 5
+  },
+  "items": [
+    {
+      "DISPOSITIVO": "ITEM-HASH-001",
+      "COD_PRODUTO": "000001",
+      "PRODUTO": "Produto Teste 1",
+      "QTDE": 1,
+      "UNITARIO": 24.95,
+      "TOTAL": "24.95",
+      "COMPLEMENTO": "Sem cebola",
+      "COMPLEMENTO2": "Bem passado",
+      "IMPRESSO": 0,
+      "COD_AGRUP": "",
+      "CODSUBGRUPO": null,
+      "ADICIONAL": "N",
+      "ADC_CODITEM": "",
+      "COD_TEMP": "",
+      "COD_USUARIO": "000001",
+      "DATA": "18/01/2026",
+      "HORA": "21:10:30",
+      "DISPOSITIVO_ORIGEM": "APP",
+      "NAOSINCRONIZADO": 0,
+      "PAGO": "N",
+
+      "LISTA_ADICIONAIS": [
+        {
+          "NOMEADICIONAL": "Adicional 1",
+          "CODADICIONAL": "000100",
+          "QTDE": 1,
+          "PRECO": "2.50",
+          "CODITEM": "000001"
+        },
+        {
+          "NOMEADICIONAL": "Adicional 2",
+          "CODADICIONAL": "000101",
+          "QTDE": 1,
+          "PRECO": "3.00",
+          "CODITEM": "000001"
+        }
+      ],
+
+      "LISTA_OPCIONAIS": [
+        {
+          "NOMEOPCIONAL": "Opcional 1",
+          "CODOPCIONAL": "000102",
+          "QTDE": 1,
+          "CODITEM": "000001"
+        },
+        {
+          "NOMEOPCIONAL": "Opcional 2",
+          "CODOPCIONAL": "000202",
+          "QTDE": 1,
+          "CODITEM": "000001"
+        }
+      ],
+
+      "LISTA_OPCOES": [
+        {
+          "NOMEINGREDIENTE": "Opção 1",
+          "CODPRODUTO": "000001",
+          "CODINGREDIENTE": "000001",
+          "CODITEM": "000001",
+          "CANCELADO": 0,
+          "PAGO": "N"
+        },
+        {
+          "NOMEINGREDIENTE": "Opção 2",
+          "CODPRODUTO": "000001",
+          "CODINGREDIENTE": "000002",
+          "CODITEM": "000001",
+          "CANCELADO": 0,
+          "PAGO": "N"
+        }
+      ],
+
+      "LISTA_MONTAGEM": [],
+
+      "LISTA_COMBOITENS": []
+    },
+    {
+      "DISPOSITIVO": "ITEM-HASH-002",
+      "COD_PRODUTO": "000002",
+      "PRODUTO": "Produto Teste 2",
+      "QTDE": 2,
+      "UNITARIO": 19.95,
+      "TOTAL": "39.90",
+      "COMPLEMENTO": "Sem açúcar",
+      "COMPLEMENTO2": "",
+      "IMPRESSO": 0,
+      "COD_AGRUP": "",
+      "CODSUBGRUPO": "002",
+      "ADICIONAL": "N",
+      "ADC_CODITEM": "",
+      "COD_TEMP": "",
+      "COD_USUARIO": "000001",
+      "DATA": "18/01/2026",
+      "HORA": "21:10:30",
+      "DISPOSITIVO_ORIGEM": "APP",
+      "NAOSINCRONIZADO": 0,
+      "PAGO": "N",
+
+      "LISTA_ADICIONAIS": [
+        {
+          "NOMEADICIONAL": "Adicional 1",
+          "CODADICIONAL": "000100",
+          "QTDE": 1,
+          "PRECO": "2.50",
+          "CODITEM": "000002"
+        },
+        {
+          "NOMEADICIONAL": "Adicional 2",
+          "CODADICIONAL": "000101",
+          "QTDE": 1,
+          "PRECO": "3.00",
+          "CODITEM": "000002"
+        }
+      ],
+
+      "LISTA_OPCIONAIS": [
+        {
+          "NOMEOPCIONAL": "Opcional 1",
+          "CODOPCIONAL": "000102",
+          "QTDE": 1,
+          "CODITEM": "000002"
+        },
+        {
+          "NOMEOPCIONAL": "Opcional 2",
+          "CODOPCIONAL": "000202",
+          "QTDE": 1,
+          "CODITEM": "000002"
+        }
+      ],
+
+      "LISTA_OPCOES": [
+        {
+          "NOMEINGREDIENTE": "Opção 1",
+          "CODPRODUTO": "000002",
+          "CODINGREDIENTE": "000001",
+          "CODITEM": "000002",
+          "CANCELADO": 0,
+          "PAGO": "N"
+        },
+        {
+          "NOMEINGREDIENTE": "Opção 2",
+          "CODPRODUTO": "000002",
+          "CODINGREDIENTE": "000002",
+          "CODITEM": "000002",
+          "CANCELADO": 0,
+          "PAGO": "N"
+        }
+      ],
+
+      "LISTA_MONTAGEM": [],
+
+      "LISTA_COMBOITENS": []
+    }
+  ]
+}
