@@ -33,3 +33,15 @@ export async function listar_ingredientes(EMPRESAID: number) {
     },
   });
 }
+
+export async function listar_ingrediente_codigo(
+  EMPRESAID: number,
+  CODIGO: string,
+) {
+  return await prisma.ingrediente.findMany({
+    where: {
+      EMPRESAID,
+      CODIGO,
+    },
+  });
+}

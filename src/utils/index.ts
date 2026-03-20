@@ -2,6 +2,7 @@ export function tratarProduto(produto: any) {
   return {
     ...produto,
     PRECOVENDA: parsePreco(produto.PRECOVENDA),
+    PRECOCUSTO: parsePreco(produto.PRECOCUSTO),
     PRECO_PROMOCAO: parsePreco(produto.PRECO_PROMOCAO),
     SITUACAO: parseInt(produto.SITUACAO),
     QTDE_MAX_OPCOES: produto.QTDE_MAX_OPCOES
@@ -16,7 +17,9 @@ export function tratarProduto(produto: any) {
     PROMO_DELIVERY: produto.PROMO_DELIVERY
       ? parseInt(produto.PROMO_DELIVERY)
       : null,
-    PROMO_MESA: produto.PROMO_MESA ? parseInt(produto.PROMO_MESA) : null,
+    VENDA_PROMOCAO: produto.VENDA_PROMOCAO
+      ? parseInt(produto.VENDA_PROMOCAO)
+      : null,
     APP_CARDAPIO: produto.APP_CARDAPIO ? parseInt(produto.APP_CARDAPIO) : null,
     APP_DELIVERY: produto.APP_DELIVERY ? parseInt(produto.APP_DELIVERY) : null,
     USA_BALANCA: produto.USA_BALANCA ? parseInt(produto.USA_BALANCA) : null,
@@ -91,4 +94,25 @@ export function parsePreco(valor: any): number {
   // Caso 3: formato padrão -> 25.8 ou 25
   const n = parseFloat(v);
   return isNaN(n) ? 0 : n;
+}
+
+export function serializeBigInt(data: any) {
+  return JSON.parse(
+    JSON.stringify(data, (_, value) =>
+      typeof value === "bigint" ? Number(value) : value,
+    ),
+  );
+}
+
+export function formatarCNPJ(cnpj: string | null): string | null {
+  if (!cnpj) return null;
+
+  const numeros = cnpj.replace(/\D/g, "");
+
+  if (numeros.length !== 14) return cnpj;
+
+  return numeros.replace(
+    /^(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})$/,
+    "$1.$2.$3/$4-$5",
+  );
 }

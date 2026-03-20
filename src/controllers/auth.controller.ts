@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import * as repo from "../repositories/empresa.repository";
+import * as empresaRepository from "../repositories/empresa.repository";
 import { comparar_secret } from "../utils/hash";
 import { gerar_token } from "../utils/jwt";
 
@@ -12,22 +12,22 @@ export async function gerar_token_empresa(req: Request, res: Response) {
     });
   }
 
-  const empresa = await repo.buscar_por_client_id(client_id);
+  const empresa = await empresaRepository.buscar_por_client_id(client_id);
 
   if (!empresa) {
-    return res.status(401).json({ message: "Credenciais inválidas" });
+    return res.status(401).json({ message: "ID do cliente inválido!" });
   }
 
-  const valido = await comparar_secret(client_secret, empresa.secret_hash);
+  const valido = await comparar_secret(client_secret, empresa.SECRET_HASH);
 
   if (!valido) {
-    return res.status(401).json({ message: "Credenciais inválidas" });
+    return res.status(401).json({ message: "Credenciais inválidas!" });
   }
 
   const expiresAt = new Date();
   expiresAt.setDate(expiresAt.getDate() + 1);
 
-  const token = gerar_token(Number(empresa.id));
+  const token = gerar_token(Number(empresa.ID));
 
-  return res.json({ token, expiraEm: expiresAt.toISOString() });
+  return res.status(201).json({ token, expiraEm: expiresAt.toISOString() });
 }

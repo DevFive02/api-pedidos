@@ -1,29 +1,80 @@
 import { prisma } from "../lib/prisma";
+import { formatarCNPJ } from "../utils";
 
-export function criar(data: {
-  cnpj: string;
-  razao: string;
-  client_id: string;
-  secret_hash: string;
-}) {
+export function criar(data: any) {
   return prisma.empresa.create({ data });
 }
 
-export function buscar_por_client_id(client_id: string) {
+export function buscar_por_client_id(CLIENT_ID: string) {
   return prisma.empresa.findFirst({
-    where: { client_id },
+    where: { CLIENT_ID },
   });
 }
 
-export function buscar_por_cnpj(cnpj: string) {
+export function buscar_por_cnpj(CNPJ: string) {
   return prisma.empresa.findFirst({
-    where: { cnpj },
+    where: { CNPJ },
   });
 }
 
-export function atualizar_secret(empresa_id: number, secret_hash: string) {
+export function atualizar_secret(empresa_id: number, SECRET_HASH: string) {
   return prisma.empresa.update({
-    where: { id: empresa_id },
-    data: { secret_hash },
+    where: { ID: empresa_id },
+    data: { SECRET_HASH },
   });
+}
+
+export async function listar_empresa(ID: number) {
+  const empresa = await prisma.empresa.findUnique({
+    select: {
+      CODIGO: true,
+      CNPJ: true,
+      FILIAL: true,
+      FANTASIA: true,
+      ENDERECO: true,
+      BAIRRO: true,
+      NUMERO : true,
+      CIDADE: true,
+      UF: true,
+      CEP: true,
+    },
+    where: {
+      ID,
+    },
+  });
+
+  if (!empresa) return null;
+
+  return {
+    ...empresa,
+    CNPJ: formatarCNPJ(empresa.CNPJ),
+  };
+}
+
+export async function listar_empresa_codigo(ID: number, CODIGO: string) {
+  const empresa = await prisma.empresa.findUnique({
+    select: {
+      CODIGO: true,
+      CNPJ: true,
+      FILIAL: true,
+      FANTASIA: true,
+      ENDERECO: true,
+      NUMERO: true,
+      BAIRRO: true,
+      CIDADE: true,
+      UF: true,
+      CEP: true,
+    },
+    where: {
+      ID,
+      CODIGO,
+    },
+  });
+
+  if (!empresa) return null;
+
+  return {
+    ...empresa,
+    CNPJ: formatarCNPJ(empresa.CNPJ),
+  };
 }

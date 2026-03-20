@@ -1,10 +1,10 @@
-import * as repo from "../repositories/empresa.repository";
+import * as empresaRepository from "../repositories/empresa.repository";
 import { hash_secret } from "../utils/hash";
 import { gerar_secret } from "../utils/secret";
 import crypto from "crypto";
 
-export async function criar_empresa(cnpj: string, razao: string) {
-  let empresa = await empresa_por_cnpj(cnpj);
+export async function criar_empresa(dados: any) {
+  let empresa = await empresa_por_cnpj(dados.CNPJ);
 
   if (empresa) {
     return {
@@ -18,11 +18,10 @@ export async function criar_empresa(cnpj: string, razao: string) {
   const client_secret = gerar_secret();
   const secret_hash = await hash_secret(client_secret);
 
-  empresa = await repo.criar({
-    cnpj,
-    razao,
-    client_id,
-    secret_hash,
+  empresa = await empresaRepository.criar({
+    ...dados,
+    CLIENT_ID: client_id,
+    SECRET_HASH: secret_hash,
   });
 
   return {
@@ -36,13 +35,23 @@ export async function rotacionar_secret(empresa_id: number) {
   const novo_secret = gerar_secret();
   const novo_hash = await hash_secret(novo_secret);
 
-  await repo.atualizar_secret(empresa_id, novo_hash);
+  await empresaRepository.atualizar_secret(empresa_id, novo_hash);
 
   return novo_secret;
 }
 
 export async function empresa_por_cnpj(cnpj: string) {
-  const empresa = await repo.buscar_por_cnpj(cnpj);
+  const empresa = await empresaRepository.buscar_por_cnpj(cnpj);
 
+  return empresa;
+}
+
+export async function listar_empresa(id: number) {
+  const empresa = await empresaRepository.listar_empresa(id);
+  return empresa;
+}
+
+export async function listar_empresa_codigo(id: number, codigo: string) {
+  const empresa = await empresaRepository.listar_empresa_codigo(id, codigo);
   return empresa;
 }

@@ -1,9 +1,15 @@
-import { Router } from "express"
-import { authMiddleware } from "../middlewares/auth.middleware"
-import { upsert_subgrupos } from "../controllers/subgrupo.controller"
+import { Router } from "express";
+import { authMiddleware } from "../middlewares/auth.middleware";
+import {
+  listar_subgrupo_codigo,
+  listar_subgrupos,
+  upsert_subgrupos,
+} from "../controllers/subgrupo.controller";
 
-const router = Router()
+const router = Router();
 
-router.post("/", authMiddleware, upsert_subgrupos)
+router.get("/", authMiddleware, listar_subgrupos);
+router.get("/:CODIGO", authMiddleware, listar_subgrupo_codigo);
+router.post("/", authMiddleware, upsert_subgrupos);
 
-export default router
+export default router;

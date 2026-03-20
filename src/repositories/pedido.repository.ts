@@ -28,6 +28,13 @@ async function resolveCliente(EMPRESAID: number, CLIENTE: any) {
   return cliente;
 }
 
+export async function aceitar_pedido(EMPRESAID: number, id: number) {
+  await prisma.pedido.update({
+    where: { ID: id, EMPRESAID },
+    data: { STATUS: PedidoStatus.ACEITO },
+  });
+}
+
 export async function criar_pedido(EMPRESAID: number, payload: any) {
   const clienteCadastro = await resolveCliente(EMPRESAID, payload.CLIENTE);
 

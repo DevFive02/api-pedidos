@@ -7,39 +7,53 @@ datasource db {
 }
 
 model empresa {
-  id          Int           @id @default(autoincrement())
-  cnpj        String        @unique
-  razao       String
-  client_id   String        @unique
-  secret_hash String
-  cliente     cliente[]
-  combo       combo[]
-  grupo       grupo[]
-  ingrediente ingrediente[]
-  pedido      pedido[]
-  produto     produto[]
-  subgrupo    subgrupo[]
+  ID          Int    @id @default(autoincrement())
+  CODIGO      String
+  CNPJ        String @unique
+  FILIAL      String
+  FANTASIA    String
+  ENDERECO    String
+  NUMERO      String
+  BAIRRO      String
+  CIDADE      String
+  UF          String
+  CEP         String
+  CLIENT_ID   String @unique
+  SECRET_HASH String
+
+  cliente             cliente[]
+  combo               combo[]
+  comboProdutos       combo_produtos[]
+  grupo               grupo[]
+  ingrediente         ingrediente[]
+  pedido              pedido[]
+  produto             produto[]
+  subgrupo            subgrupo[]
+  funcionarios        funcionario[]
+  produtoAdicionais   produto_adicional[]
+  produtoIngredientes produto_ingrediente[]
+  produtoOpcionais    produto_opcional[]
+  vendas              venda[]
+  vendedors           vendedor[]
 }
 
 model grupo {
-  ID               Int        @id @default(autoincrement())
+  ID               Int     @id @default(autoincrement())
   CODIGO           String
   EMPRESAID        Int?
-  PRODUTOID        Int
   GRUPO            String
   NAO_MOSTRA_KYOSK String?
   FOTO             String?
   APP_CARDAPIO     Int
   APP_DELIVERY     Int
-  SEQUENCIA        Int
+  SEQUENCIA        Int?
   HORA_INICIO      String?
   HORA_FIM         String?
-  empresa          empresa?   @relation(fields: [EMPRESAID], references: [id])
-  produto          produto    @relation(fields: [PRODUTOID], references: [ID])
-  subgrupo         subgrupo[]
+
+  empresa  empresa?   @relation(fields: [EMPRESAID], references: [ID])
+  subgrupo subgrupo[]
 
   @@index([EMPRESAID], map: "grupo_EMPRESAID_fkey")
-  @@index([PRODUTOID], map: "grupo_PRODUTOID_fkey")
 }
 
 model subgrupo {
@@ -54,7 +68,7 @@ model subgrupo {
   NAO_MOSTRA_KYOSK String?
   DESTAQUE         String?
   FOTO             String?
-  empresa          empresa? @relation(fields: [EMPRESAID], references: [id])
+  empresa          empresa? @relation(fields: [EMPRESAID], references: [ID])
   grupo            grupo    @relation(fields: [GRUPOID], references: [ID])
 
   @@index([EMPRESAID], map: "subgrupo_EMPRESAID_fkey")
@@ -62,110 +76,155 @@ model subgrupo {
 }
 
 model produto {
-  ID                   Int                     @id @default(autoincrement())
-  CODIGO               String
-  PRODUTO              String
-  UNIDADE              String?
-  PRECOVENDA           Float
-  SITUACAO             Int
-  ADICIONAL            String?
-  CODGRUPO             String?
-  CODSUBGRUPO          String?
-  PRODUTO_MONTADO      String?
-  MOSTRA_KYOSK_APP     String?
-  PRECO_PROMOCAO       Float?
-  DT_INICIO_PROMOCAO   String?
-  DT_FIM_PROMOCAO      String?
-  HORA_INICIO_PROMOCAO String?
-  HORA_FIM_PROMOCAO    String?
-  HORARIO_PROMOCAO     Int?
-  USA_BALANCA          Int?
-  USA_TALHERES         Int?
-  USA_PONTO_CARNE      Int?
-  USA_COPOS            Int?
+  ID                   Int     @id @default(autoincrement())
   ACOMPANHAMENTO       String?
+  ADICIONAL            String?
+  APP_CARDAPIO         Int?
+  APP_DELIVERY         Int?
+  APP_PEDIDO_GARCOM    Int?
+  CODBARRA             String?
+  CODGRUPO             String?
+  CODIGO               String?
+  CODMARCA             String?
+  CODSUBGRUPO          String?
+  DESTAQUE             String?
+  DT_FIM_PROMOCAO      String? 
+  DT_INICIO_PROMOCAO   String?
+  EMPRESAID            Int?
+  ESTOQUE_ATUAL        Float?  @default(0)
+  FAVORITO             String
   FOTO                 String?
+  GRUPO                String?
+  HORA_FIM_PROMOCAO    String?
+  HORA_INICIO_PROMOCAO String?
+  HORARIO_PROMOCAO     Int?
+  GRUPOID              Int?
+  SUBGRUPOID           Int?
+  MARCA                String
+  MOSTRA_KYOSK_APP     String?
   OPCIONAL             String?
+  PRECO_PROMOCAO       Float?  @default(0)
+  PRECOVENDA           Float   @default(0)
+  PRECOCUSTO           Float   @default(0)
+  PRODUTO              String
+  PRODUTO_COMBO        Int?
+  PRODUTO_MONTADO      String?
+  PROMO_DOMINGO        Int?
+  PROMO_SEGUNDA        Int?
+  PROMO_TERCA          Int?
+  PROMO_QUARTA         Int?
+  PROMO_QUINTA         Int?
+  PROMO_SEXTA          Int?
+  PROMO_SABADO         Int?
+  PROMO_DELIVERY       Int?
+  PROMO_DOBRO          Int?
+  QTDE_MAX_ADICIONAL   Int?
   QTDE_MAX_OPCIONAL    Int?
   QTDE_MAX_OPCOES      Int?
-  DESTAQUE             String?
-  PROMO_DIAS_SEMANA    String?
-  PROMO_DELIVERY       Int
-  PROMO_MESA           Int
-  APP_CARDAPIO         Int
-  APP_DELIVERY         Int
-  PROMO_DOBRO          Int
-  QTDE_MAX_ADICIONAL   Int
-  PRODUTO_COMBO        Int?
-  EMPRESAID            Int?
-  consumoPedidos       consumo_pedido[]
-  grupos               grupo[]
-  empresa              empresa?                @relation(fields: [EMPRESAID], references: [id])
-  produtoAdicionals    produto_adicional[]
-  produtoIngredientes  produto_ingrediente[]
-  produtoOpcionals     produto_opcional[]
-  combos               combo[]
-  itemAdicional        item_adicional_pedido[] @relation("relationAdicional")
-  itemOpcional         item_opcional_pedido[]  @relation("relationOpcional")
-  itemMontado          item_montado_pedido[]   @relation("relationMontado")
+  SITUACAO             Int
+  TIPO                 String  @default("VENDA")
+  UNIDADE              String?
+  USA_BALANCA          Int?
+  USA_COPOS            Int?
+  USA_PONTO_CARNE      Int?
+  USA_TALHERES         Int?
+  VENDA_PROMOCAO       Int?
+
+  consumoPedidos      consumo_pedido[]
+  empresa             empresa?                @relation(fields: [EMPRESAID], references: [ID])
+  produtoAdicionais   produto_adicional[]
+  produtoIngredientes produto_ingrediente[]
+  produtoOpcionais    produto_opcional[]
+  combos              combo[]
+  itemAdicional       item_adicional_pedido[] @relation("relationAdicional")
+  itemOpcional        item_opcional_pedido[]  @relation("relationOpcional")
+  itemMontado         item_montado_pedido[]   @relation("relationMontado")
+  vendaItems          venda_item[]
 
   @@index([EMPRESAID], map: "produto_EMPRESAID_fkey")
 }
 
+enum StatusVenda {
+  PENDENTE
+  ACEITO
+}
+
 model venda {
-  ID              Int               @id @default(autoincrement())
-  ID_EXTERNO      Int // JSON.ID
+  ID              Int         @id @default(autoincrement())
+  ID_EXTERNO      Int
+  EMPRESAID       Int
   HASH            String
-  COD_CAIXA       String
-  COD_VENDEDOR    String
-  DATA_HORA       DateTime // "10/02/2026 09:08:57"
-  MEIO_CARTAOCRED Float             @default(0)
-  MEIO_CARTAODEB  Float             @default(0)
-  MEIO_DINHEIRO   Float             @default(0)
-  MEIO_PIX        Float             @default(0)
+  CODCLIENTE      String
+  CODCAIXA        String
+  CODVENDEDOR     String
+  CODSISTEMA      String
+  DATA            String // "10/02/2026 09:08:57"
+  MEIO_CARTAOCRED Float       @default(0)
+  MEIO_CARTAODEB  Float       @default(0)
+  MEIO_DINHEIRO   Float       @default(0)
+  MEIO_PIX        Float       @default(0)
   SUBTOTAL        Float
-  DESCONTO        Float             @default(0)
-  ACRESCIMO       Float             @default(0)
+  DESCONTO        Float       @default(0)
+  ACRESCIMO       Float       @default(0)
   TOTAL           Float
   OBS             String?
   SITUACAO        Int
   NFCE            Int
+  CREATED_AT      DateTime    @default(now())
   CLIENTE_ID      Int?
-  CLIENTE         cliente?          @relation(fields: [CLIENTE_ID], references: [ID])
-  ITENS           venda_item[]
-  PAGAMENTOS      venda_pagamento[]
-  CREATED_AT DateTime @default(now())
+  STATUS          StatusVenda @default(PENDENTE)
 
-  @@unique([ID_EXTERNO])
+  CLIENTE    cliente?          @relation(fields: [CLIENTE_ID], references: [ID])
+  ITENS      venda_item[]
+  PAGAMENTOS venda_pagamento[]
+  empresa    empresa?          @relation(fields: [EMPRESAID], references: [ID])
 }
 
 model venda_pagamento {
-  ID       Int   @id @default(autoincrement())
-  VENDA_ID Int
-  VENDA    venda @relation(fields: [VENDA_ID], references: [ID])
+  ID               Int    @id @default(autoincrement())
+  VENDA_ID         Int
+  VENDA_ID_EXTERNO Int
+  CODPAGAMENTO     Int
+  TIPO             String
+  VALOR            Float
 
-  COD_PAGAMENTO Int
-  TIPO          String
-  VALOR         Float
+  VENDA venda @relation(fields: [VENDA_ID], references: [ID])
 }
 
 model venda_item {
-  ID       Int   @id @default(autoincrement())
-  VENDA_ID Int
-  VENDA    venda @relation(fields: [VENDA_ID], references: [ID])
+  ID                    Int     @id @default(autoincrement())
+  PRODUTO_ID            Int
+  VENDA_ID              Int
+  CODIGO                Int // CODIGO
+  COD_PRODUTO           String
+  PRODUTO               String
+  QTDE                  Float
+  UNITARIO              Float
+  TOTAL                 Float
+  COMPLEMENTO           String?
+  COMPLEMENTO2          String?
+  ADC_CODITEM           String?
+  ADICIONAL             String
+  CODSUBGRUPO           String
+  COD_AGRUP             String
+  COD_USUARIO           String
+  COD_VENDA             Int
+  COMBO                 Int
+  COMBO_CODITEM         String?
+  DATA                  String
+  HORA                  String
+  DISPOSITIVO           String
+  DISPOSITIVO_IMPRESSAO String?
+  IMPRESSO              Int
+  NAOSINCRONIZADO       Int
+  OPCIONAL              String
+  PAGO                  String
+  PROMOCAO_DOBRO        Int
+  TRANSF_MESA           Int
+  CANCELADO             Int
 
-  CODIGO_ITEM Int // CODIGO
-  COD_PRODUTO String
-  PRODUTO     String
-
-  QTDE     Float
-  UNITARIO Float
-  TOTAL    Float
-
-  COMPLEMENTO  String?
-  COMPLEMENTO2 String?
-
-  CANCELADO Int
+  produto produto @relation(fields: [PRODUTO_ID], references: [ID])
+  venda   venda   @relation(fields: [VENDA_ID], references: [ID])
 }
 
 enum PedidoTipo {
@@ -192,9 +251,10 @@ model pedido {
   INFO_RECIBO     String?
   DATA            String?
   HORA            String?
+  ORIGEM          String?
   COD_CUPOM       Int?
-  VALOR_ENTREGA   Float                    @default(0)
-  VALOR_TROCO     Float                    @default(0)
+  VALOR_ENTREGA   Float?                   @default(0)
+  VALOR_TROCO     Float?                   @default(0)
   STATUS          PedidoStatus             @default(GRAVANDO)
   EMPRESAID       Int?
   MODO_PAGAMENTO  PedidoModoPagamento      @default(ENTREGA)
@@ -207,7 +267,7 @@ model pedido {
   CLIENTE         cliente_pedido?          @relation(fields: [CLIENTE_ID], references: [ID])
   consumo_pedido  consumo_pedido[]
   FORMA_PAGAMENTO forma_pagamento_pedido[]
-  empresa         empresa?                 @relation(fields: [EMPRESAID], references: [id])
+  empresa         empresa?                 @relation(fields: [EMPRESAID], references: [ID])
 
   @@index([EMPRESAID], map: "pedido_EMPRESAID_fkey")
 }
@@ -270,7 +330,7 @@ model combo {
   VALOR_BASE     Float?
   EMPRESAID      Int?
   PRODUTOID      Int
-  empresa        empresa?         @relation(fields: [EMPRESAID], references: [id])
+  empresa        empresa?         @relation(fields: [EMPRESAID], references: [ID])
   produto        produto?         @relation(fields: [PRODUTOID], references: [ID])
   combo_produtos combo_produtos[]
 
@@ -279,6 +339,7 @@ model combo {
 
 model combo_produtos {
   ID               Int     @id @default(autoincrement())
+  EMPRESAID        Int
   ID_EXTERNO       Int
   COMBO_ID         Int?
   COMBO_ID_EXTERNO Int?
@@ -286,6 +347,8 @@ model combo_produtos {
   VALOR            Float?
   QTDE             Float?
   combo            combo?  @relation(fields: [COMBO_ID], references: [ID])
+
+  empresa empresa? @relation(fields: [EMPRESAID], references: [ID])
 
   @@index([COMBO_ID], map: "combo_produtos_COMBO_ID_fkey")
 }
@@ -295,20 +358,21 @@ model ingrediente {
   EMPRESAID           Int?
   CODIGO              String
   NOME                String
-  empresa             empresa?              @relation(fields: [EMPRESAID], references: [id])
+  empresa             empresa?              @relation(fields: [EMPRESAID], references: [ID])
   produtoIngredientes produto_ingrediente[]
 
   @@index([EMPRESAID], map: "ingrediente_EMPRESAID_fkey")
 }
 
 model produto_adicional {
-  ID             Int     @id @default(autoincrement())
+  ID             Int      @id @default(autoincrement())
   PRODUTOID      Int
   CODIGO         String
   EMPRESAID      Int?
   CODPRODUTO     String
   PROD_ADICIONAL String
-  produto        produto @relation(fields: [PRODUTOID], references: [ID])
+  produto        produto  @relation(fields: [PRODUTOID], references: [ID])
+  empresa        empresa? @relation(fields: [EMPRESAID], references: [ID])
 
   @@index([PRODUTOID], map: "produto_adicional_PRODUTOID_fkey")
 }
@@ -319,23 +383,26 @@ model produto_ingrediente {
   CODIGO         String
   EMPRESAID      Int?
   CODPRODUTO     String
-  INGREDIENTEID  Int
   CODINGREDIENTE String?
+  INGREDIENTEID  Int
   ingrediente    ingrediente @relation(fields: [INGREDIENTEID], references: [ID])
   produto        produto     @relation(fields: [PRODUTOID], references: [ID])
+  empresa        empresa?    @relation(fields: [EMPRESAID], references: [ID])
 
   @@index([INGREDIENTEID], map: "produto_ingrediente_INGREDIENTEID_fkey")
   @@index([PRODUTOID], map: "produto_ingrediente_PRODUTOID_fkey")
 }
 
 model produto_opcional {
-  ID          Int     @id @default(autoincrement())
+  ID          Int    @id @default(autoincrement())
   PRODUTOID   Int
   CODIGO      String
   EMPRESAID   Int?
   CODPRODUTO  String
   CODOPCIONAL String
-  produto     produto @relation(fields: [PRODUTOID], references: [ID])
+
+  produto produto  @relation(fields: [PRODUTOID], references: [ID])
+  empresa empresa? @relation(fields: [EMPRESAID], references: [ID])
 
   @@index([PRODUTOID], map: "produto_opcional_PRODUTOID_fkey")
 }
@@ -415,10 +482,33 @@ model cliente {
   COMPLEMENTO String
   CIDADE      String
   UF          String
-  empresa     empresa @relation(fields: [EMPRESAID], references: [id])
+  empresa     empresa @relation(fields: [EMPRESAID], references: [ID])
   vendas      venda[]
 
   @@index([EMPRESAID], map: "cliente_EMPRESAID_fkey")
+}
+
+model funcionario {
+  ID        Int    @id @default(autoincrement())
+  EMPRESAID Int
+  CODIGO    String
+  NOME      String
+  PASS      String
+  SITUACAO  Int
+
+  empresa empresa @relation(fields: [EMPRESAID], references: [ID])
+}
+
+model vendedor {
+  ID        Int     @id @default(autoincrement())
+  EMPRESAID Int
+  CODIGO    String
+  NOME      String
+  SENHA     String
+  CODCAIXA  String?
+  SITUACAO  Int
+
+  empresa empresa? @relation(fields: [EMPRESAID], references: [ID])
 }
 
 model forma_pagamento_pedido {
@@ -432,4 +522,233 @@ model forma_pagamento_pedido {
   pedido          pedido  @relation(fields: [PEDIDOID], references: [ID])
 
   @@index([PEDIDOID], map: "forma_pagamento_pedido_PEDIDOID_fkey")
+}
+
+model SystemAccessLog {
+  id           Int       @id @default(autoincrement())
+  sessionid    String?   @db.Text
+  login        String?   @db.Text
+  login_time   DateTime  @default(now())
+  login_year   String?   @db.VarChar(4)
+  login_month  String?   @db.VarChar(2)
+  login_day    String?   @db.VarChar(2)
+  logout_time  DateTime?
+  impersonated String?   @db.Char(1)
+  access_ip    String?   @db.VarChar(45)
+
+  @@map("system_access_log")
+}
+
+model SystemChangeLog {
+  id             Int      @id @default(autoincrement())
+  logdate        DateTime @default(now())
+  login          String?  @db.Text
+  tablename      String?  @db.Text
+  primarykey     String?  @db.Text
+  pkvalue        String?  @db.Text
+  operation      String?  @db.Text
+  columnname     String?  @db.Text
+  oldvalue       String?  @db.Text
+  newvalue       String?  @db.Text
+  access_ip      String?  @db.Text
+  transaction_id String?  @db.Text
+  log_trace      String?  @db.Text
+  session_id     String?  @db.Text
+  class_name     String?  @db.Text
+  php_sapi       String?  @db.Text
+  log_year       String?  @db.VarChar(4)
+  log_month      String?  @db.VarChar(2)
+  log_day        String?  @db.VarChar(2)
+
+  @@map("system_change_log")
+}
+
+model SystemDocument {
+  id              Int       @id @default(autoincrement())
+  system_user_id  Int?
+  title           String?   @db.Text
+  description     String?   @db.Text
+  category_id     Int?
+  submission_date DateTime?
+  archive_date    DateTime?
+  filename        String?   @db.Text
+
+  @@map("system_document")
+}
+
+model SystemDocumentCategory {
+  id   Int     @id @default(autoincrement())
+  name String? @db.Text
+
+  @@map("system_document_category")
+}
+
+model SystemDocumentGroup {
+  id              Int  @id @default(autoincrement())
+  document_id     Int?
+  system_group_id Int?
+
+  @@map("system_document_group")
+}
+
+model SystemDocumentUser {
+  id             Int  @id @default(autoincrement())
+  document_id    Int?
+  system_user_id Int?
+
+  @@map("system_document_user")
+}
+
+model SystemGroup {
+  id   Int     @id @default(autoincrement())
+  name String? @db.VarChar(100)
+
+  @@map("system_group")
+}
+
+model SystemGroupProgram {
+  id                Int  @id @default(autoincrement())
+  system_group_id   Int?
+  system_program_id Int?
+
+  @@map("system_group_program")
+}
+
+model SystemMessage {
+  id                Int     @id @default(autoincrement())
+  system_user_id    Int?
+  system_user_to_id Int?
+  subject           String? @db.Text
+  message           String? @db.Text
+  dt_message        String? @db.Text
+  checked           String? @db.Char(1)
+
+  @@map("system_message")
+}
+
+model SystemNotification {
+  id                Int     @id @default(autoincrement())
+  system_user_id    Int?
+  system_user_to_id Int?
+  subject           String? @db.Text
+  message           String? @db.Text
+  dt_message        String? @db.Text
+  action_url        String? @db.Text
+  action_label      String? @db.Text
+  icon              String? @db.Text
+  checked           String? @db.Char(1)
+
+  @@map("system_notification")
+}
+
+model SystemPreference {
+  id    String  @id @default(uuid())
+  value String? @db.Text
+
+  @@map("system_preference")
+}
+
+model SystemProgram {
+  id         Int     @id @default(autoincrement())
+  name       String? @db.VarChar(100)
+  controller String? @db.VarChar(100)
+
+  @@map("system_program")
+}
+
+model SystemRequestLog {
+  id               Int     @id @default(autoincrement())
+  endpoint         String? @db.Text
+  logdate          String? @db.Text
+  log_year         String? @db.VarChar(4)
+  log_month        String? @db.VarChar(2)
+  log_day          String? @db.VarChar(2)
+  session_id       String? @db.Text
+  login            String? @db.Text
+  access_ip        String? @db.Text
+  class_name       String? @db.Text
+  http_host        String? @db.Text
+  server_port      String? @db.Text
+  request_uri      String? @db.Text
+  request_method   String? @db.Text
+  query_string     String? @db.Text
+  request_headers  String? @db.Text
+  request_body     String? @db.Text
+  request_duration Int?
+
+  @@map("system_request_log")
+}
+
+model SystemSqlLog {
+  id             Int      @id @default(autoincrement())
+  logdate        DateTime @default(now())
+  login          String?  @db.Text
+  database_name  String?  @db.Text
+  sql_command    String?  @db.Text
+  statement_type String?  @db.Text
+  access_ip      String?  @db.VarChar(45)
+  transaction_id String?  @db.Text
+  log_trace      String?  @db.Text
+  session_id     String?  @db.Text
+  class_name     String?  @db.Text
+  php_sapi       String?  @db.Text
+  request_id     String?  @db.Text
+  log_year       String?  @db.VarChar(4)
+  log_month      String?  @db.VarChar(2)
+  log_day        String?  @db.VarChar(2)
+
+  @@map("system_sql_log")
+}
+
+model SystemUnit {
+  id              Int     @id @default(autoincrement())
+  name            String? @db.VarChar(100)
+  connection_name String? @db.VarChar(100)
+
+  @@map("system_unit")
+}
+
+model SystemUser {
+  id             Int     @id @default(autoincrement())
+  name           String? @db.VarChar(100)
+  login          String? @db.VarChar(100)
+  password       String? @db.VarChar(100)
+  email          String? @db.VarChar(100)
+  empresa_id     Int?
+  frontpage_id   Int?
+  system_unit_id Int?
+  active         String? @db.Char(1)
+
+  @@map("system_user")
+}
+
+model SystemUserGroup {
+  id              Int  @id @default(autoincrement())
+  system_user_id  Int?
+  system_group_id Int?
+
+  @@map("system_user_group")
+}
+
+model SystemUserProgram {
+  id                Int  @id @default(autoincrement())
+  system_user_id    Int?
+  system_program_id Int?
+
+  @@map("system_user_program")
+}
+
+model SystemUserUnit {
+  id             Int  @id @default(autoincrement())
+  system_user_id Int?
+  system_unit_id Int?
+
+  @@map("system_user_unit")
+}
+
+model Token {
+  id   Int    @id @default(autoincrement())
+  uuid String @db.VarChar(36)
+
+  @@map("token")
 }

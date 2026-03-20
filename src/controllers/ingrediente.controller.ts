@@ -40,3 +40,23 @@ export async function listar_ingredientes(
     next(err);
   }
 }
+
+export async function listar_ingrediente_codigo(
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) {
+  try {
+    const EMPRESAID = req.EMPRESAID!;
+    const CODIGO = String(req.params.CODIGO);
+
+    const ingrediente = await ingredienteService.listar_ingrediente_codigo(
+      EMPRESAID,
+      CODIGO,
+    );
+
+    return res.status(200).json(ingrediente);
+  } catch (err) {
+    next(err);
+  }
+}

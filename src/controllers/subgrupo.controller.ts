@@ -1,25 +1,59 @@
-import { Request, Response, NextFunction } from "express"
-import * as subgrupoService from "../services/subgrupo.service"
+import { Request, Response, NextFunction } from "express";
+import * as subgrupoService from "../services/subgrupo.service";
 
 export async function upsert_subgrupos(
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) {
   try {
-    const EMPRESAID = req.EMPRESAID!
-    const subgrupos = req.body
+    const EMPRESAID = req.EMPRESAID!;
+    const subgrupo = req.body;
 
-    if (!Array.isArray(subgrupos)) {
-      return res.status(400).json({
-        message: "Body deve ser um array de subgrupos"
-      })
+    const data = await subgrupoService.upsert_subgrupos(EMPRESAID, subgrupo);
+
+    if (data) {
+      return res.status(201).json(data);
+    } else {
+      return res.status(400).json(data);
     }
-
-    await subgrupoService.upsert_subgrupos(EMPRESAID, subgrupos)
-
-    return res.json({ mensagem: "sucesso" })
   } catch (err) {
-    next(err)
+    next(err);
+  }
+}
+
+export async function listar_subgrupos(
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) {
+  try {
+    const EMPRESAID = req.EMPRESAID!;
+
+    const data = await subgrupoService.listar_subgrupos(EMPRESAID);
+
+    return res.status(200).json(data);
+  } catch (err) {
+    next(err);
+  }
+}
+
+export async function listar_subgrupo_codigo(
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) {
+  try {
+    const EMPRESAID = req.EMPRESAID!;
+    const CODIGO = String(req.params.CODIGO);
+
+    const data = await subgrupoService.listar_subgrupo_codigo(
+      EMPRESAID,
+      CODIGO,
+    );
+
+    return res.status(200).json(data);
+  } catch (err) {
+    next(err);
   }
 }

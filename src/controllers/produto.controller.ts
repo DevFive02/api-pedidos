@@ -17,6 +17,46 @@ export async function listar_produtos(
   }
 }
 
+export async function listar_produto_codigo(
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) {
+  try {
+    const empresa_id = req.EMPRESAID!;
+    const CODIGO = String(req.params.CODIGO);
+
+    const produtos = await produtoService.listar_produto_codigo(
+      empresa_id,
+      CODIGO,
+    );
+
+    return res.json(produtos);
+  } catch (err) {
+    next(err);
+  }
+}
+
+export async function listar_produto_foto(
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) {
+  try {
+    const empresa_id = req.EMPRESAID!;
+    const CODIGO = String(req.params.CODIGO);
+
+    const produto = await produtoService.listar_produto_foto(
+      empresa_id,
+      CODIGO,
+    );
+
+    return res.json(produto);
+  } catch (err) {
+    next(err);
+  }
+}
+
 export async function upsert_produto(
   req: Request,
   res: Response,
@@ -42,5 +82,21 @@ export async function upsert_produto(
     }
   } catch (error) {
     next(error);
+  }
+}
+
+export async function listar_produtos_cardapio(
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) {
+  try {
+    const empresa_id = req.EMPRESAID!;
+
+    const produtos = await produtoService.listar_produtos_cardapio(empresa_id);
+
+    return res.json(produtos);
+  } catch (err) {
+    next(err);
   }
 }
