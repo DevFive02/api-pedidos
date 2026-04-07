@@ -64,8 +64,10 @@ export async function listar_pedidos(
 ) {
   try {
     const EMPRESAID = req.EMPRESAID!;
+    const origem =
+      typeof req.query.origem === "string" ? req.query.origem : "FIVE";
 
-    const pedidos = await pedidoService.listar_pedidos(EMPRESAID);
+    const pedidos = await pedidoService.listar_pedidos(EMPRESAID, origem);
 
     return res.json(pedidos);
   } catch (err) {

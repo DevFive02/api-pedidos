@@ -8,8 +8,8 @@ export async function criar_pedido(EMPRESAID: number, payload: any) {
   return pedidoRepository.criar_pedido(EMPRESAID, payload);
 }
 
-export async function listar_pedidos(EMPRESAID: number) {
-  return pedidoRepository.listar_pedidos(EMPRESAID);
+export async function listar_pedidos(EMPRESAID: number, origem?: string) {
+  return pedidoRepository.listar_pedidos(EMPRESAID, origem);
 }
 
 export async function buscar_pedido_por_id(EMPRESAID: number, id: number) {

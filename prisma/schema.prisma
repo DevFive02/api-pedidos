@@ -88,7 +88,7 @@ model produto {
   CODMARCA             String?
   CODSUBGRUPO          String?
   DESTAQUE             String?
-  DT_FIM_PROMOCAO      String? 
+  DT_FIM_PROMOCAO      String?
   DT_INICIO_PROMOCAO   String?
   EMPRESAID            Int?
   ESTOQUE_ATUAL        Float?  @default(0)
@@ -135,7 +135,7 @@ model produto {
   produtoAdicionais   produto_adicional[]
   produtoIngredientes produto_ingrediente[]
   produtoOpcionais    produto_opcional[]
-  combos              combo[]
+  combos              combo[] 
   itemAdicional       item_adicional_pedido[] @relation("relationAdicional")
   itemOpcional        item_opcional_pedido[]  @relation("relationOpcional")
   itemMontado         item_montado_pedido[]   @relation("relationMontado")

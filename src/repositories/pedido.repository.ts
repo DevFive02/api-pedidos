@@ -172,9 +172,9 @@ export async function criar_pedido(EMPRESAID: number, payload: any) {
   });
 }
 
-export async function listar_pedidos(EMPRESAID: number) {
+export async function listar_pedidos(EMPRESAID: number, origem?: string) {
   const pedidos = await prisma.pedido.findMany({
-    where: { EMPRESAID, STATUS: "PENDENTE", TIPO: "FOOD" },
+    where: { EMPRESAID, STATUS: "PENDENTE", TIPO: "FOOD", ORIGEM: origem },
     include: {
       CLIENTE: true,
       consumo_pedido: {

@@ -1,9 +1,12 @@
 import { prisma } from "../lib/prisma";
+import { Prisma } from "@prisma/client";
 
-export async function criar_venda(EMPRESAID: number, venda: any) {
+type PrismaTx = Prisma.TransactionClient;
+
+export async function criar_venda(EMPRESAID: number, venda: any, tx: PrismaTx) {
   const { ID, ...dados } = venda;
 
-  return await prisma.venda.create({
+  return await tx.venda.create({
     data: { ...dados, EMPRESAID, ID_EXTERNO: ID },
   });
 }

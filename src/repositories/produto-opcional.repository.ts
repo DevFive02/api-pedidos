@@ -1,4 +1,7 @@
+import { Prisma } from "@prisma/client";
 import { prisma } from "../lib/prisma";
+
+type PrismaTx = Prisma.TransactionClient;
 
 export async function listar_produto_opcionais(EMPRESAID: number) {
   try {
@@ -46,8 +49,9 @@ export async function upsert_produto_opcional(
   EMPRESAID: number,
   PRODUTOID: number,
   data: any,
+  tx?: PrismaTx,
 ) {
-  const existente = await prisma.produto_opcional.findFirst({
+  const existente = await (tx || prisma).produto_opcional.findFirst({
     where: {
       EMPRESAID,
       CODPRODUTO: data.CODPRODUTO,
@@ -55,7 +59,7 @@ export async function upsert_produto_opcional(
   });
 
   if (existente) {
-    await prisma.produto_opcional.update({
+    await (tx || prisma).produto_opcional.update({
       data: {
         ...data,
       },
@@ -64,7 +68,7 @@ export async function upsert_produto_opcional(
       },
     });
   } else {
-    await prisma.produto_opcional.create({
+    await (tx || prisma).produto_opcional.create({
       data: {
         EMPRESAID,
         PRODUTOID,

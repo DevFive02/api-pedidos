@@ -25,7 +25,7 @@ export async function gerar_token_empresa(req: Request, res: Response) {
   }
 
   const expiresAt = new Date();
-  expiresAt.setDate(expiresAt.getDate() + 1);
+  expiresAt.setDate(expiresAt.getDate() + 7); // Token válido por 7 dias
 
   const token = gerar_token(Number(empresa.ID));
 

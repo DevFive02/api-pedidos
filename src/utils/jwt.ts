@@ -6,6 +6,6 @@ export function gerar_token(EMPRESAID: number) {
   return jwt.sign(
     { EMPRESAID },
     JWT_SECRET,
-    { expiresIn: "1d" }
+    { expiresIn: "7d" }
   )
 }

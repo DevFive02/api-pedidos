@@ -1,5 +1,8 @@
+import { Prisma } from "@prisma/client";
 import { prisma } from "../lib/prisma";
 import { serializeBigInt, tratarProduto } from "../utils";
+
+type PrismaTx = Prisma.TransactionClient;
 
 export async function listar_produtos(EMPRESAID: number) {
   const produtos: any[] = await prisma.$queryRaw`
@@ -93,7 +96,7 @@ export async function listar_produto_foto(EMPRESAID: number, CODIGO: string) {
 }
 
 export async function listar_produto_codigo(EMPRESAID: number, CODIGO: string) {
-  const data: any = await prisma.$queryRaw`
+  const data: any[] = await prisma.$queryRaw`
     SELECT CODIGO, 
     PRODUTO, 
     CODBARRA, 
@@ -146,10 +149,31 @@ export async function listar_produto_codigo(EMPRESAID: number, CODIGO: string) {
   return produto;
 }
 
-export async function upsert_produto(EMPRESAID: number, produto: any) {
+export async function listar_id_produto_codigo(
+  EMPRESAID: number,
+  CODIGO: string,
+) {
+  const produto = await prisma.produto.findFirst({
+    where: {
+      EMPRESAID,
+      CODIGO,
+    },
+    select: {
+      ID: true,
+    },
+  });
+
+  return produto?.ID;
+}
+
+export async function upsert_produto(
+  EMPRESAID: number,
+  produto: any,
+  tx: PrismaTx,
+) {
   const produtoFinal = tratarProduto(produto);
 
-  const existente = await prisma.produto.findFirst({
+  const existente = await tx.produto.findFirst({
     where: {
       EMPRESAID,
       CODIGO: produto.CODIGO,
@@ -159,14 +183,14 @@ export async function upsert_produto(EMPRESAID: number, produto: any) {
   let dados = null;
 
   if (existente) {
-    dados = await prisma.produto.update({
+    dados = await tx.produto.update({
       data: produtoFinal,
       where: {
         ID: existente.ID,
       },
     });
   } else {
-    dados = await prisma.produto.create({
+    dados = await tx.produto.create({
       data: {
         ...produtoFinal,
         EMPRESAID,
@@ -201,11 +225,7 @@ export async function listar_produtos_cardapio(EMPRESAID: number) {
           combo_produtos: true,
         },
       },
-      produtoAdicionais: {
-        include: {
-          produto: true,
-        },
-      },
+      produtoAdicionais: true,
       produtoIngredientes: {
         include: {
           ingrediente: true,

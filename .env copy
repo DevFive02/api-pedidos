@@ -1,0 +1,4 @@
+DATABASE_URL="mysql://pedidos:pedidos@localhost:3306/pedidos"
+SHADOW_DATABASE_URL="mysql://pedidos:pedidos@localhost:3306/prisma_shadow"
+JWT_SECRET="12345"10.100.34.164
+SERVER_URL="http://localhost:8080/painel_pedidos"

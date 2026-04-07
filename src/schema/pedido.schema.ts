@@ -85,6 +85,7 @@ const pedidoSchema = z
     ID: z.number(),
     TOTAL: z.number(),
     SUBTOTAL: z.number(),
+    ORIGEM: z.string(),
     DATA: z.string(),
     HORA: z.string(),
     CLIENTE: clienteSchema,

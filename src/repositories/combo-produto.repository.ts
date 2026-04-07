@@ -1,5 +1,8 @@
+import { Prisma } from "@prisma/client";
 import { prisma } from "../lib/prisma";
 import { tratarItemCombo } from "../utils";
+
+type PrismaTx = Prisma.TransactionClient;
 
 export async function listar_combo_produtos(EMPRESAID: number) {
   const comboProdutos =
@@ -26,10 +29,11 @@ export async function upsert_produto_combo_produtos(
   EMPRESAID: number,
   COMBO_ID: number,
   data: any,
+  tx?: PrismaTx,
 ) {
   const itemComboFinal = tratarItemCombo(data);
 
-  const existente = await prisma.combo_produtos.findFirst({
+  const existente = await (tx || prisma).combo_produtos.findFirst({
     where: {
       COMBO_ID,
       COMBO_ID_EXTERNO: itemComboFinal.COMBO_ID_EXTERNO,
@@ -40,7 +44,7 @@ export async function upsert_produto_combo_produtos(
   });
 
   if (existente) {
-    await prisma.combo_produtos.update({
+    await (tx || prisma).combo_produtos.update({
       data: {
         ...itemComboFinal,
       },
@@ -49,7 +53,7 @@ export async function upsert_produto_combo_produtos(
       },
     });
   } else {
-    await prisma.combo_produtos.create({
+    await (tx || prisma).combo_produtos.create({
       data: {
         EMPRESAID,
         COMBO_ID,
