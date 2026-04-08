@@ -36,6 +36,17 @@ export async function aceitar_pedido(EMPRESAID: number, id: number) {
 }
 
 export async function criar_pedido(EMPRESAID: number, payload: any) {
+  const pedidoExistente = await prisma.pedido.findFirst({
+    where: {
+      IDEXTERNO: String(payload.ID),
+      EMPRESAID,
+    },
+  });
+
+  if (pedidoExistente) {
+    throw new Error("Pedido já existe");
+  }
+
   const clienteCadastro = await resolveCliente(EMPRESAID, payload.CLIENTE);
 
   return prisma.$transaction(async (tx) => {
