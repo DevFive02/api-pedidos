@@ -39,7 +39,7 @@ const montadoItemSchema = z
 
 const itemSchema = z
   .object({
-    CODPRODUTO: z.string(),
+    CODPRODUTO: z.string().nullable(),
     PRODUTO: z.string(),
     QTDE: z.number().min(1),
     UNITARIO: z.number(),
