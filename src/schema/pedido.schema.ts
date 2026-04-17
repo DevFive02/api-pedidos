@@ -5,7 +5,6 @@ const comboItemSchema = z
     CODPRODUTO: z.string(),
     QTDE: z.number(),
     PRECO: z.number(),
-    CODITEM: z.string(),
   })
   .strict();
 
